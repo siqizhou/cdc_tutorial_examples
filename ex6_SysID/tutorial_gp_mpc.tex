@@ -1,0 +1,24 @@
+% Tutorial example: using a learned model in closed loop: ex6_SysID/6.3_GP_MPC.ipynb
+
+\begin{tutorialexample}[label={ex:gp-mpc}]
+    {Acting under uncertainty}
+    {TODO-notebook-url}
+  A learned model becomes useful for control once its uncertainty is propagated over the prediction horizon and converted into constraint tightening. The confidence level reserved as margin then acts as a dial between performance and constraint satisfaction, whose position is a design choice with a measurable price. This example places the \ac{GP} of~\autoref{ex:model-learning} inside a predictive controller and traces out that trade-off. The complete implementation is provided in \cite[Ex.~6.3]{cfr-nootbook}.
+
+  We now consider a car traversing the unknown terrain of~\autoref{ex:model-learning}, with state $\boldsymbol{x}=[p,v]^\top$ and dynamics
+  \begin{align}
+  \dot p = v, \qquad \dot v = u\cos\alpha(p) - g\sin\alpha(p)\cos\alpha(p),
+  \end{align}
+  where $\alpha(p)=\arctan(h'(p))$. The terrain enters only through its slope, so the quantity propagated in~\eqref{eq:cov-prop} is $\mathrm{Var}[h'(p)]$, obtained from the posterior covariance rather than from $\mathrm{Var}[h(p)]$. The task is to reach a target subject to a speed limit $v\le v_{\max}=0.6$, which is active. We solve~\eqref{eq:smpc} with the \ac{GP} posterior mean as $\rho(\cdot)$, a linearized covariance recursion under an ancillary feedback as $\Lambda(\cdot)$, and the tightening $\nu(\cdot)$ chosen as $\beta\,\sigma^v_{i|k}$, so that the velocity constraint reads $\mu^v_{i|k}\le v_{\max}-\beta\,\sigma^v_{i|k}$. Here $\beta=2$ corresponds to roughly $95\%$ per constraint, and $\beta=0$ to a certainty-equivalent controller that ignores the model uncertainty.
+
+  As shown in~\autoref{fig:tutorial-gp-mpc}, the certainty-equivalent controller exceeds the limit by $0.139$: where no data was collected the \ac{GP} mean reverts towards its prior, and the model error becomes a constraint violation. The violation vanishes between $\beta=1$ and $\beta=2$ at about $5\%$ higher cost, while $\beta=3$ costs a further $7\%$ and buys nothing. The predicted uncertainty grows along the horizon and fastest across the unsampled region, so the far end of the horizon sets the required margin. That margin is only as good as the variance producing it: a model that understates its uncertainty yields a confident bound and a violated constraint.
+
+  \begin{tutorialfigure}
+      \includegraphics[width=\linewidth]
+          {examples/gp_mpc/tutorial_learning_mpc.pdf}
+      \captionof{figure}{
+          Closed-loop behaviour of \ac{GP}-based predictive control for increasing confidence levels~$\beta$. The velocity is shown against the active speed limit (dashed), together with the predicted velocity uncertainty along the horizon and the resulting trade-off between closed-loop cost and constraint violation.
+      }
+      \label{fig:tutorial-gp-mpc}
+  \end{tutorialfigure}
+  \end{tutorialexample}

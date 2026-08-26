@@ -1,0 +1,21 @@
+% Tutorial example: model learning with BLR and GP: ex6_SysID/6.2_Learning_Based_MPC.ipynb (Part 4)
+
+\begin{tutorialexample}[label={ex:model-learning}]
+    {Learning the unknown}
+    {https://deepnote.com/workspace/zhc2025-0b39bb6e-7795-4a9f-b408-a8c07ff1a8c0/project/Optimal-Control-and-Decision-Making-3cd755ab-dde6-495e-b773-6c366e7647c9/notebook/Optimal-Control-and-Decision-Making-ex6SysID-61SysID-54c43e3438b54edd88b754d9b2d6176e}
+  Learning can effectively estimate unknown dynamics while retaining known model structure. Observed data constrain the model within sampled regions, while prior structure shapes its generalization beyond them. Using two complementary probabilistic methods, this example illustrates how data and structure jointly influence predictive accuracy and the reliability of uncertainty estimates. The complete implementation is provided in \cite[Ex.~6.2]{cfr-nootbook}.
+  
+  We consider a mountain car traveling over an unknown terrain profile~$h(p)$, whose slope enters the vehicle dynamics. The true profile is $h(p)=0.01\cos(18 p)$  and is observed through noisy measurements $\mathcal{D}= \{(p^{(d)},h^{(d)})\}_{d=1}^{D}$, where $h^{(d)} = h(p^{(d)})+\varepsilon^{(d)}$ and $\varepsilon^{(d)}\sim\mathcal{N}(0,\sigma^2)$ is \ac{iid} Gaussian noise with $\sigma^2=2.5\times 10^{-5}$.
+  
+  As shown in~\autoref{fig:tutorial-model-learning}, \ac{BLR} with a well-specified periodic basis generalizes accurately across the unsampled data gap. When sufficiently good prior is unavailable, a suitably tuned \ac{GP} provides a more flexible alternative, though  at a cost of increased uncertainty bounds. Overall, both methods rely on structural assumptions—basis functions for BLR and the kernel and its hyperparameters for GPs. Poorly chosen structure introduces model misspecification or structurally errors that may not be captured by the predictive variance, resulting in inaccurate predictions or overconfident uncertainty estimates. Reliable generalization depends on the appropriateness of structural assumptions, especially with small dataset.
+  
+  \begin{tutorialfigure}
+      \includegraphics[width=\linewidth]
+          {examples/model_learning/tutorial_model_learning.pdf}
+      \captionof{figure}{
+          Effect of prior structure on learning from incomplete data. The gray region contains no measurements; the dashed blue and solid red curves denote the true profile and posterior mean, respectively, and the shaded bands correspond to model predictive uncertainties. %A correct BLR basis enables structured extrapolation, whereas a misspecified basis introduces unmodeled structural error. GP predictions and uncertainty depend strongly on the kernel length scale.
+      }
+      \label{fig:tutorial-model-learning}
+  \end{tutorialfigure}
+  \end{tutorialexample}
+  
